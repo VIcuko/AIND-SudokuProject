@@ -95,7 +95,20 @@ def reduce_puzzle(values):
     return values
 
 def search(values):
-    pass
+    values = reduce_puzzle(values)
+    if values == False:
+        return False
+    if all(len(values[index]) == 1 for index in boxes): 
+        return values
+    # Choose one of the unfilled squares with the fewest possibilities
+    l,index = min((len(values[index]),index) for index in boxes if (len(values[index])>1))
+    # Now use recursion to solve each one of the resulting sudokus, and if one returns a value (not False), return that answer!
+    for element in values[index]:
+        new_values = values.copy()
+        new_values[index]=element
+        test_case = search(new_values)
+        if test_case:
+            return test_case
 
 def solve(grid):
     """
