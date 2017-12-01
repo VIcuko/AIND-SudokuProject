@@ -1,4 +1,25 @@
 assignments = []
+rows = 'ABCDEFGHI'
+cols = '123456789'
+
+# It returns a list with all the possible boxes in the sudoku
+boxes = cross(rows, cols)
+
+# It returns a list with one position per row such that
+# row_units[0] = ['A1', 'A2', 'A3', 'A4', 'A5', 'A6', 'A7', 'A8', 'A9']
+row_units = [cross(r, cols) for r in rows]
+
+# It returns a list with one position per column such that
+# column_units[0] = ['A1', 'B1', 'C1', 'D1', 'E1', 'F1', 'G1', 'H1', 'I1']
+column_units = [cross(rows, c) for c in cols]
+
+# It returns a list with one position per square such that
+# square_units[0] = ['A1', 'A2', 'A3', 'B1', 'B2', 'B3', 'C1', 'C2', 'C3']
+square_units = [cross(rs, cs) for rs in ('ABC','DEF','GHI') for cs in ('123','456','789')]
+
+unitlist = row_units + column_units + square_units
+units = dict((s, [u for u in unitlist if s in u]) for s in boxes)
+peers = dict((s, set(sum(units[s],[]))-set([s])) for s in boxes)
 
 def assign_value(values, box, value):
     """
@@ -23,12 +44,19 @@ def naked_twins(values):
     Returns:
         the values dictionary with the naked twins eliminated from peers.
     """
+    for unit in unitlist:    
+        dplaces = [values[box] for box in unit if len(values[box])==2]
+        if len(dplaces) => 2:
+            
+            values[dplaces[0]] = digit
+    return values
+
 
     # Find all instances of naked twins
     # Eliminate the naked twins as possibilities for their peers
 
 def cross(A, B):
-    return [s+t for s in a for t in b]
+    return [s+t for s in A for t in B]
 
 def grid_values(grid):
     """
