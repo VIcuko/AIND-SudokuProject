@@ -44,11 +44,19 @@ def naked_twins(values):
     Returns:
         the values dictionary with the naked twins eliminated from peers.
     """
-    for unit in unitlist:    
-        dplaces = [values[box] for box in unit if len(values[box])==2]
-        if len(dplaces) => 2:
-            
-            values[dplaces[0]] = digit
+    for unit in unitlist:
+        twin_cells = box for box in unit if len(values[box]) == 2 
+        if len(twin_cells) >= 2:
+            #deleted_values = []
+            for index, cell in enumerate(twin_cells):
+                equal_cells = [cell]
+                for case in twin_cells[index+1:] if values[case] == values[cell]:
+                    equal_cells.append(case)
+                if len(equal_cells) == 2:
+                    #deleted_values.append()
+                    for number in values[cell]:
+                        for box in unit if not box in equal_cells and number in values[box]:
+                            values[box] = values[box].strip(number)
     return values
 
 
