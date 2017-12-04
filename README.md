@@ -3,11 +3,11 @@
 
 # Question 1 (Naked Twins)
 Q: How do we use constraint propagation to solve the naked twins problem?  
-A: *Student should provide answer here*
+A: First we check every sublist contained in the unitlist list, which contains the boxes tags corresponding to each line, column, square and the recently added diagonal. Once iterating over each of these lists, we check which of the values for each tag has a length of 2 (since the naked_twins can only be executed when there are 2 boxes with 2 numbers). After verifying that there is at least 2 boxes with 2 numbers, we check that there are exactly 2 boxes with the same 2 numbers. After doing so, we remove each number one by one from the rest of the boxes contained in the same line, column, square or diagonal.
 
 # Question 2 (Diagonal Sudoku)
 Q: How do we use constraint propagation to solve the diagonal sudoku problem?  
-A: *Student should provide answer here*
+A: Basically in the same way we did for the row, column or square, after all, it's just another subgroup containing a list of 9 elements. So by adding this list to the unitlist list, we can the use it to calculate the peers and units in the exact same way as for the other elements.
 
 ### Install
 

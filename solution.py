@@ -1,25 +1,4 @@
 assignments = []
-rows = 'ABCDEFGHI'
-cols = '123456789'
-
-# It returns a list with all the possible boxes in the sudoku
-boxes = cross(rows, cols)
-
-# It returns a list with one position per row such that
-# row_units[0] = ['A1', 'A2', 'A3', 'A4', 'A5', 'A6', 'A7', 'A8', 'A9']
-row_units = [cross(r, cols) for r in rows]
-
-# It returns a list with one position per column such that
-# column_units[0] = ['A1', 'B1', 'C1', 'D1', 'E1', 'F1', 'G1', 'H1', 'I1']
-column_units = [cross(rows, c) for c in cols]
-
-# It returns a list with one position per square such that
-# square_units[0] = ['A1', 'A2', 'A3', 'B1', 'B2', 'B3', 'C1', 'C2', 'C3']
-square_units = [cross(rs, cs) for rs in ('ABC','DEF','GHI') for cs in ('123','456','789')]
-
-unitlist = row_units + column_units + square_units + diagonals
-units = dict((s, [u for u in unitlist if s in u]) for s in boxes)
-peers = dict((s, set(sum(units[s],[]))-set([s])) for s in boxes)
 
 def assign_value(values, box, value):
     """
@@ -45,17 +24,19 @@ def naked_twins(values):
         the values dictionary with the naked twins eliminated from peers.
     """
     for unit in unitlist:
-        twin_cells = box for box in unit if len(values[box]) == 2 
+        twin_cells = [box for box in unit if len(values[box]) == 2]
         if len(twin_cells) >= 2:
             #deleted_values = []
             for index, cell in enumerate(twin_cells):
                 equal_cells = [cell]
-                for case in twin_cells[index+1:] if values[case] == values[cell]:
-                    equal_cells.append(case)
+                cellcases = [cellcase for cellcase in twin_cells[index+1:] if values[cellcase] == values[cell]]
+                for cellcase in cellcases:
+                    equal_cells.append(cellcase)
                 if len(equal_cells) == 2:
                     #deleted_values.append()
                     for number in values[cell]:
-                        for box in unit if not box in equal_cells and number in values[box]:
+                        boxes = [box for box in unit if not box in equal_cells and number in values[box]]
+                        for box in boxes:
                             values[box] = values[box].strip(number)
     return values
 
@@ -123,6 +104,7 @@ def reduce_puzzle(values):
         solved_values_before = len([box for box in values.keys() if len(values[box]) == 1])
         values = eliminate(values)
         values = only_choice(values)
+        values = naked_twins(values)
         solved_values_after = len([box for box in values.keys() if len(values[box]) == 1])
         stalled = solved_values_before == solved_values_after
         if len([box for box in values.keys() if len(values[box]) == 0]):
@@ -145,6 +127,34 @@ def search(values):
         if test_case:
             return test_case
 
+rows = 'ABCDEFGHI'
+cols = '123456789'
+
+# It returns a list with all the possible boxes in the sudoku
+boxes = cross(rows, cols)
+
+# It returns a list with one position per row such that
+# row_units[0] = ['A1', 'A2', 'A3', 'A4', 'A5', 'A6', 'A7', 'A8', 'A9']
+row_units = [cross(r, cols) for r in rows]
+
+# It returns a list with one position per column such that
+# column_units[0] = ['A1', 'B1', 'C1', 'D1', 'E1', 'F1', 'G1', 'H1', 'I1']
+column_units = [cross(rows, c) for c in cols]
+
+# It returns a list with one position per square such that
+# square_units[0] = ['A1', 'A2', 'A3', 'B1', 'B2', 'B3', 'C1', 'C2', 'C3']
+square_units = [cross(rs, cs) for rs in ('ABC','DEF','GHI') for cs in ('123','456','789')]
+
+# It returns a list with one position per diagonal such that
+# diagonal[0] = ['A1', 'B2', 'C3', 'D4', 'E5', 'F6', 'G7', 'H8', 'I9']
+diagonal1 = [rows[i]+cols[i] for i in range(len(rows))]
+diagonal2 = [rows[i]+cols[-(i+1)] for i in range(len(rows))]
+diagonals = [diagonal1,diagonal2]
+
+unitlist = row_units + column_units + square_units + diagonals
+units = dict((s, [u for u in unitlist if s in u]) for s in boxes)
+peers = dict((s, set(sum(units[s],[]))-set([s])) for s in boxes)
+
 def solve(grid):
     """
     Find the solution to a Sudoku grid.
@@ -154,6 +164,10 @@ def solve(grid):
     Returns:
         The dictionary representation of the final sudoku grid. False if no solution exists.
     """
+    values = grid_values(grid)
+    values = search(values)
+    return values
+
 
 if __name__ == '__main__':
     diag_sudoku_grid = '2.............62....1....7...6..8...3...9...7...6..4...4....8....52.............3'
