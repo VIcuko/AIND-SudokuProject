@@ -1,3 +1,4 @@
+import pdb
 assignments = []
 
 def assign_value(values, box, value):
@@ -23,22 +24,21 @@ def naked_twins(values):
     Returns:
         the values dictionary with the naked twins eliminated from peers.
     """
+    values_copy = values.copy()
     for unit in unitlist:
-        twin_cells = [box for box in unit if len(values[box]) == 2]
+        twin_cells = [box for box in unit if len(values_copy[box]) == 2] 
         if len(twin_cells) >= 2:
-            #deleted_values = []
             for index, cell in enumerate(twin_cells):
                 equal_cells = [cell]
-                cellcases = [cellcase for cellcase in twin_cells[index+1:] if values[cellcase] == values[cell]]
+                cellcases = [cellcase for cellcase in twin_cells[index+1:] if values_copy[cellcase] == values_copy[cell]]
                 for cellcase in cellcases:
                     equal_cells.append(cellcase)
                 if len(equal_cells) == 2:
-                    #deleted_values.append()
-                    for number in values[cell]:
-                        boxes = [box for box in unit if not box in equal_cells and number in values[box]]
+                    for number in values_copy[cell]:
+                        boxes = [box for box in unit if not box in equal_cells and number in values_copy[box]]
                         for box in boxes:
-                            values[box] = values[box].strip(number)
-    return values
+                            values_copy[box] = values_copy[box].replace(number,'')
+    return values_copy
 
 
     # Find all instances of naked twins
